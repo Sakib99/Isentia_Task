@@ -18,7 +18,7 @@ def time_files_initialize(filename):
     current_time = now.strftime("%H:%M:%S")
     out_file = open(filename, "r") 
     data=json.load(out_file)
-    return current_time,data
+    return current_time,data,1
 
 def load_category_contents(mycursor,section,website_name):
         sql_select_Query = "select content,time from web_sections_final where category=%s and wesite_name=%s"
@@ -29,7 +29,7 @@ def load_category_contents(mycursor,section,website_name):
         if len(records)>1:
             for i in records:
                 contents.append(i[0])
-        return contents
+        return contents,e
 
 
 
@@ -37,7 +37,7 @@ def get_web_DOM_tree(data,website_name):
     web_url=data[website_name]['url']
     page = requests.get(data[website_name]['url'])
     tree = html.fromstring(page.content)
-    return tree,web_url
+    return tree,web_url,1
 
 
 def get_updated_item(latest,contents,web_url,section,website_name,mycursor):
@@ -64,18 +64,18 @@ def section_scanner(data,website_name,contents,section,web_url,tree,mycursor):
 
 def web_scanner(mycursor,data):
         for website_name in data:
-            tree,web_url =get_web_DOM_tree(data,website_name)
+            tree,web_url,e =get_web_DOM_tree(data,website_name)
             for section in data[website_name]:
-                contents=load_category_contents(mycursor,section,website_name)
+                contents,e=load_category_contents(mycursor,section,website_name)
                 section_scanner(data,website_name,contents,section,web_url,tree,mycursor)
                 #insert_values(mycursor,str(website_name),str(data[website_name]['url']),str(section),str(item),current_time)
                 
-
+        return 1
 if __name__ == "__main__":  
     while(True):
-        print('Next Update!')
-        time.sleep(300)
-        current_time,data=time_files_initialize("my_web_Xpath1.json")  
+        print('hello geek!')
+        time.sleep(30)
+        current_time,data,e=time_files_initialize("my_web_Xpath1.json")  
         mydb,mycursor=make_connection()                   
         web_scanner(mycursor,data)
         print('hey')
