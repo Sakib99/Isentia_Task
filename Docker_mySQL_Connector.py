@@ -45,13 +45,3 @@ def insert_values(mycursor,name,url,category,content,current_time):
 def table_create(mycursor):
     mycursor.execute("CREATE TABLE web_sections_final (wesite_name VARCHAR(55),wesite_url VARCHAR(255),category VARCHAR(100),content VARCHAR(3000), time VARCHAR(50))")
 
-
-#insert_values(mycursor,'l','ll',"ll","ll",current_time)
-#sql_select_Query = "select content from web_sections_final where wesite_name=%s and category=%s"
-#tup=('9news','sports')
-##
-#mycursor.execute(sql_select_Query,tup)
-#records=mycursor.fetchall()
-#print(records)
-#mydb.close()
-#mycursor.close()
