@@ -73,7 +73,7 @@ def web_scanner(mycursor,data):
 
 if __name__ == "__main__":  
     while(True):
-        print('hello geek!')
+        print('Next Update!')
         time.sleep(300)
         current_time,data=time_files_initialize("my_web_Xpath1.json")  
         mydb,mycursor=make_connection()                   
