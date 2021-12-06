@@ -11,7 +11,7 @@ from Docker_mySQL_Connector import insert_values,make_connection
 from datetime import datetime
 import time
 
-
+#initialize the files
 
 def time_files_initialize(filename):
     now = datetime.now()
@@ -19,7 +19,7 @@ def time_files_initialize(filename):
     out_file = open(filename, "r") 
     data=json.load(out_file)
     return current_time,data,1
-
+#load data from mySQL
 def load_category_contents(mycursor,section,website_name):
         sql_select_Query = "select content,time from web_sections_final where category=%s and wesite_name=%s"
         tuple1 = (section,website_name)
@@ -39,7 +39,7 @@ def get_web_DOM_tree(data,website_name):
     tree = html.fromstring(page.content)
     return tree,web_url,1
 
-
+# get the newly updated item by matching to Mysql database
 def get_updated_item(latest,contents,web_url,section,website_name,mycursor):
     try:
         for item in latest:
@@ -53,7 +53,7 @@ def get_updated_item(latest,contents,web_url,section,website_name,mycursor):
                 mydb.commit()
     except:
         print('error')
-
+# go to each category of the website
 def section_scanner(data,website_name,contents,section,web_url,tree,mycursor):
     try:
               latest=tree.xpath(data[website_name][section])
@@ -61,7 +61,7 @@ def section_scanner(data,website_name,contents,section,web_url,tree,mycursor):
     except:
                    print('')
 
-
+#scan the websites
 def web_scanner(mycursor,data):
         for website_name in data:
             tree,web_url,e =get_web_DOM_tree(data,website_name)
