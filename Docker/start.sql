@@ -7,14 +7,5 @@ GRANT ALL PRIVILEGES ON carles_database.* TO 'python'@'%';
 
 USE carles_database;
 
-CREATE TABLE car_queue (
-    i_id_car int,
-    s_model_code varchar(25),
-    s_color_code varchar(25),
-    s_extras varchar(100),
-    i_right_side int,
-    s_city_to_ship varchar(25)
-);
 
-INSERT INTO car_queue (i_id_car, s_model_code, s_color_code, s_extras, i_right_side, s_city_to_ship) VALUES (1, "GOLF2021", "BLUE7", "COND_AIR, GPS, MULTIMEDIA_V3", 0, "Barcelona");
-INSERT INTO car_queue (i_id_car, s_model_code, s_color_code, s_extras, i_right_side, s_city_to_ship) VALUES (2, "GOLF2021_PLUGIN_HYBRID", "BLUEMETAL_5", "COND_AIR, GPS, MULTIMEDIA_V3, SECURITY_V5", 1, "Cork");
+CREATE TABLE web_sections_final (wesite_name VARCHAR(55),wesite_url VARCHAR(255),category VARCHAR(100),content VARCHAR(3000), time VARCHAR(50));
