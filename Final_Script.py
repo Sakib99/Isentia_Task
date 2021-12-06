@@ -7,66 +7,77 @@ Created on Thu Dec  2 18:03:22 2021
 import json
 from lxml import html
 import requests
-
-
-
-
-
-import mysql.connector
-
-mydb = mysql.connector.connect(
-  host="localhost",
-  port=80,
-  user="python",
-  password="sakib",
-  database="carles_database"
-)
-mycursor = mydb.cursor()
+from Docker_mySQL_Connector import insert_values,make_connection
 from datetime import datetime
-
-now = datetime.now()
-
-current_time = now.strftime("%H:%M:%S")
-
-def insert_values(mycursor,name,url,category,content,current_time):
-    query="""INSERT INTO web_sections_test1 (wesite_name,wesite_url,category,content,time) 
-           VALUES (%s, %s, %s, %s, %s) """
-    insert_tuple=(name,url,category,content,current_time)
-    mycursor.execute(query,insert_tuple)
-    sql_select_Query = "select * from web_sections_test1"
-
-    mycursor.execute(sql_select_Query)
-    
-    records=mycursor.fetchall()
-    print(records)
-def table_create(mycursor):
-    mycursor.execute("CREATE TABLE web_sections_test1 (wesite_name VARCHAR(55),wesite_url VARCHAR(255),category VARCHAR(100),content VARCHAR(3000), time VARCHAR(50))")
+import time
 
 
 
+def time_files_initialize(filename):
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    out_file = open(filename, "r") 
+    data=json.load(out_file)
+    return current_time,data
 
-out_file = open("my_web_Xpath1.json", "r") 
-    
-data=json.load(out_file) 
-for website_name in data:
-    
+def load_category_contents(mycursor,section,website_name):
+        sql_select_Query = "select content,time from web_sections_final where category=%s and wesite_name=%s"
+        tuple1 = (section,website_name)
+        mycursor.execute(sql_select_Query,tuple1)
+        records=mycursor.fetchall()
+        contents=[]
+        if len(records)>1:
+            for i in records:
+                contents.append(i[0])
+        return contents
+
+
+
+def get_web_DOM_tree(data,website_name):
+    web_url=data[website_name]['url']
     page = requests.get(data[website_name]['url'])
     tree = html.fromstring(page.content)
-    for section in data[website_name]:
-        print(section)
-        try:
-           
-        #This will create a list of buyers:
-            try:
+    return tree,web_url
+
+
+def get_updated_item(latest,contents,web_url,section,website_name,mycursor):
+    try:
+        for item in latest:
+            flag=0
+            for value in contents:
+                if (item==value):
+                    flag=1
+            if(flag==0):
+                print(web_url+": "+section+" :Updated :"+item)
+                insert_values(mycursor,str(website_name),str(data[website_name]['url']),str(section),str(item),current_time)
+                mydb.commit()
+    except:
+        print('error')
+
+def section_scanner(data,website_name,contents,section,web_url,tree,mycursor):
+    try:
               latest=tree.xpath(data[website_name][section])
-              for item in latest:
-                  #print(mycursor,website_name,data[website_name]['url'],section,item,current_time)
-                  insert_values(mycursor,str(website_name),str(data[website_name]['url']),str(section),str(item),current_time)
-              print("")
-            except:
-              print('')
-        except:
-            print('')
-mydb.commit()
-mydb.close()
-    
+              get_updated_item(latest,contents,web_url,section,website_name,mycursor)
+    except:
+                   print('')
+
+
+def web_scanner(mycursor,data):
+        for website_name in data:
+            tree,web_url =get_web_DOM_tree(data,website_name)
+            for section in data[website_name]:
+                contents=load_category_contents(mycursor,section,website_name)
+                section_scanner(data,website_name,contents,section,web_url,tree,mycursor)
+                #insert_values(mycursor,str(website_name),str(data[website_name]['url']),str(section),str(item),current_time)
+                
+
+if __name__ == "__main__":  
+    while(True):
+        print('hello geek!')
+        time.sleep(300)
+        current_time,data=time_files_initialize("my_web_Xpath1.json")  
+        mydb,mycursor=make_connection()                   
+        web_scanner(mycursor,data)
+        print('hey')
+        #mydb.close()
+        mycursor.close()
