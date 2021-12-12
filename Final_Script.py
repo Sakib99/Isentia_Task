@@ -29,7 +29,7 @@ def load_category_contents(mycursor,section,website_name):
         if len(records)>1:
             for i in records:
                 contents.append(i[0])
-        return contents,e
+        return contents,1
 
 
 
