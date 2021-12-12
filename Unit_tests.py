@@ -20,8 +20,8 @@ class TestScript(unittest.TestCase):
     def test_scanner(self):
          s,d,e=time_files_initialize("my_web_Xpath1.json")      
          mydb,mycursor=make_connection()
-         #K=web_scanner(mycursor,d)
-         #print(self.assertAlmostEqual(K,1,'yes'))
+         K=web_scanner(mycursor,d)
+         print(self.assertAlmostEqual(K,1,'yes'))
     def load_DOM_tree(self):
        s,d,e=time_files_initialize("my_web_Xpath1.json")  
        a,b,e=get_web_DOM_tree(d,'7news')
@@ -34,4 +34,5 @@ class TestScript(unittest.TestCase):
        
 if __name__ == '__main__':
     unittest.main()
+       
        
